@@ -5,8 +5,79 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-This is the capstone project for the [Google Data Analytics Certificate](https://www.coursera.org/professional-certificates/google-data-analytics?) available through [Coursera](https://www.coursera.org/)
+**WORK IN PROGRESS**
 
-For my capstone, I chose to complete Track 1 with the *Cyclistic* bike-share case study. Background information and data can be found in the **Info** folder. Data is also available [here](https://divvy-tripdata.s3.amazonaws.com/index.html).
+This is the capstone project for the [Google Data Analytics
+Certificate](https://www.coursera.org/professional-certificates/google-data-analytics?)
+available through [Coursera](https://www.coursera.org/)
 
-**Note:** This data is made available by [Divvy Bikes](https://ride.divvybikes.com/data-license-agreement) for use, the name of the company has just been changed.
+For my capstone, I chose to complete Track 1 with the *Cyclistic* bike-share
+case study. Data is available [here](https://divvy-tripdata.s3.amazonaws.com/index.html).
+
+**Note:** This data is made available by [Divvy
+Bikes](https://ride.divvybikes.com/data-license-agreement) for use, the name of
+the company has just been changed.
+
+Background information about the case study can be found in the `info` folder. 
+
+**Note About Code**: I tried to included the package name the first time I use a
+function. Like this `rio::import`.
+
+# **Question to Answer**
+
+How do annual members and casual riders use Cyclistic bikes differently?
+
+You will produce a report with the following deliverables:
+
+1. A clear statement of the business task
+2. A description of all data sources used
+3. Documentation of any cleaning or manipulation of data
+4. A summary of your analysis
+5. Supporting visualizations and key findings
+6. Your top three recommendations based on your analysis
+
+
+# **Business Task**
+
+The business task is to compare casual and member riders to help develop a 
+strategy to convert casual riders to member riders. 
+
+
+```{r setup, include = FALSE, echo = TRUE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-",
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+
+pacman::p_load(tidyverse, rio, here, janitor)
+
+conflicted::conflict_prefer("select", "dplyr")
+conflicted::conflict_prefer("filter", "dplyr")
+```
+
+```{r data-import-raw, eval = FALSE, echo = TRUE}
+
+# import 1 file to see structure
+march_2021 <- rio::import(here::here("bike_data", "202103-divvy-tripdata.csv"), 
+                          setclass = "tibble")
+
+# create list of all file names
+bike_files <- list.files(here("bike_data"), pattern = ".csv", full.names = TRUE)
+
+# import all files and combine into one tibble
+bikes <- bike_files %>% 
+  lapply(import, setclass = "tibble") %>% 
+  dplyr::bind_rows()
+
+rio::export(bikes, file = hehere("bike_data", "all_bikes.rds"))
+
+```
+
+```{r data-import-merged, include = FALSE}
+bikes <- import(here("bike_data", "all_bikes.rds"))
+```
+
