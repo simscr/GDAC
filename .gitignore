@@ -2,3 +2,16 @@
 .Rhistory
 .RData
 .Ruserdata
+bike_data/202103-divvy-tripdata.csv
+bike_data/202104-divvy-tripdata.csv
+bike_data/202105-divvy-tripdata.csv
+bike_data/202106-divvy-tripdata.csv
+bike_data/202107-divvy-tripdata.csv
+bike_data/202108-divvy-tripdata.csv
+bike_data/202109-divvy-tripdata.csv
+bike_data/202110-divvy-tripdata.csv
+bike_data/202111-divvy-tripdata.csv
+bike_data/202112-divvy-tripdata.csv
+bike_data/202201-divvy-tripdata.csv
+bike_data/202202-divvy-tripdata.csv
+bike_data/all_bikes.rds

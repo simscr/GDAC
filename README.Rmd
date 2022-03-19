@@ -12,11 +12,7 @@ Certificate](https://www.coursera.org/professional-certificates/google-data-anal
 available through [Coursera](https://www.coursera.org/)
 
 For my capstone, I chose to complete Track 1 with the *Cyclistic* bike-share
-case study. Data is available [here](https://divvy-tripdata.s3.amazonaws.com/index.html).
-
-**Note:** This data is made available by [Divvy
-Bikes](https://ride.divvybikes.com/data-license-agreement) for use, the name of
-the company has just been changed.
+case study. 
 
 Background information about the case study can be found in the `info` folder. 
 
@@ -42,6 +38,8 @@ You will produce a report with the following deliverables:
 The business task is to compare casual and member riders to help develop a 
 strategy to convert casual riders to member riders. 
 
+# **Data Source:** 
+This data is made available by [Divvy Bikes](https://ride.divvybikes.com/data-license-agreement) for use, the name of the company has just been changed. Data is available [here](https://divvy-tripdata.s3.amazonaws.com/index.html).
 
 ```{r setup, include = FALSE, echo = TRUE}
 knitr::opts_chunk$set(
@@ -69,7 +67,7 @@ march_2021 <- rio::import(here::here("bike_data", "202103-divvy-tripdata.csv"),
 bike_files <- list.files(here("bike_data"), pattern = ".csv", full.names = TRUE)
 
 # import all files and combine into one tibble
-bikes <- bike_files %>% 
+bikes_raw <- bike_files %>% 
   lapply(import, setclass = "tibble") %>% 
   dplyr::bind_rows()
 
@@ -78,6 +76,21 @@ rio::export(bikes, file = hehere("bike_data", "all_bikes.rds"))
 ```
 
 ```{r data-import-merged, include = FALSE}
-bikes <- import(here("bike_data", "all_bikes.rds"))
+bikes_raw <- import(here("bike_data", "all_bikes.rds"))
 ```
 
+# Data Wrangling
+
+```{r data-wrangling, include = TRUE, echo = TRUE}
+bikes <- bikes_raw %>% 
+  mutate(ride_length = difftime(ended_at, started_at, units = "mins"))
+```
+
+# Comparing Casual and Member Riders
+
+```{r comparison, include = TRUE, echo = TRUE}
+bikes %>% 
+  group_by(member_casual) %>% 
+  summarize(number = n(), across(ride_length, c(mean = mean))) %>% 
+  gt::gt()
+```
