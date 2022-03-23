@@ -129,7 +129,9 @@ Member Riders.
 ggsave(sum_gg, filename = here("outputs", "comparison_plot.png"))
 ```
 
-![](C:/Users/simsc/Desktop/GDAC/GDAC/outputs/comparison_plot.png)<!-- -->
+<p align="center">
+<img src="outputs/comparison_plot.png" width="700px">
+</p>
 
 Member Riders primarily rode during the week, and had shorter rides. In
 contrast, Casual Riders primarily rode on the weekends, and the rides
