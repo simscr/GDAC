@@ -51,7 +51,7 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 
-pacman::p_load(tidyverse, rio, here, janitor)
+pacman::p_load(tidyverse, rio, here, janitor, gt, gtExtras)
 
 conflicted::conflict_prefer("select", "dplyr")
 conflicted::conflict_prefer("filter", "dplyr")
@@ -83,14 +83,56 @@ bikes_raw <- import(here("bike_data", "all_bikes.rds"))
 
 ```{r data-wrangling, include = TRUE, echo = TRUE}
 bikes <- bikes_raw %>% 
-  mutate(ride_length = difftime(ended_at, started_at, units = "mins"))
+  dplyr::mutate(ride_length = as.numeric(difftime(ended_at, started_at, units = "mins")),
+                day = lubridate::wday(started_at, label = TRUE)) %>% 
+  mutate(member_casual = case_when(member_casual == "casual" ~ "Casual", 
+                                   TRUE ~ "Member"))
+
+bikes_sum <- bikes %>% 
+  dplyr::group_by(member_casual) %>% 
+  dplyr::summarize(number = n(), across(ride_length, mean))
+
+bike_sum2 <- bikes %>% 
+  group_by(day, member_casual) %>% 
+  summarize(number = n(), across(ride_length, mean))
+
 ```
 
 # Comparing Casual and Member Riders
 
-```{r comparison, include = TRUE, echo = TRUE}
-bikes %>% 
-  group_by(member_casual) %>% 
-  summarize(number = n(), across(ride_length, c(mean = mean))) %>% 
-  gt::gt()
+```{r comparison, eval = FALSE, echo = TRUE}
+(sum_gt <- bikes_sum %>% 
+  gt::gt() %>% 
+  gt::cols_label(member_casual = md("Membership Type<br> "),
+                 number = md("Number of Rides<br> "),
+                 ride_length = md("Average Ride Length<br>(minutes)")) %>% 
+  gt::cols_width(everything() ~ px(120)) %>% 
+  cols_width(3 ~ px(200)) %>% 
+  gt::cols_align(everything(), align = "center") %>% 
+  gt::fmt_number(columns = 2, decimals = 0) %>% 
+  gt::fmt_number(columns = 3, decimals = 2) %>% 
+  gtExtras::gt_theme_guardian()
+)
+
+gt::gtsave(sum_gt, here("outputs", "membership_comparison.png"))
+
+```
+
+<p align="center"><img src="outputs/membership_comparison.png" width="700px"></p>
+
+While there were more rides by Members in the past year, the average ride length
+for Casual riders was **2.4 times longer** than that of Member riders.
+
+
+
+```{r plotting, include = FALSE}
+bike_sum2 %>% 
+  ggplot(aes(day, number, fill = member_casual)) + 
+  geom_line(aes(group = member_casual), alpha = 0.25, size = 0.5) + 
+  geom_point(aes(size = ride_length), shape = 21, color = "black") +
+  scale_y_continuous(labels = scales::comma_format()) +
+  labs(x = NULL, y = NULL, 
+       title = "Number of Riders Per Day of the Week",
+       subtitle = "Larger Circles Indicate Longer Rides")
+  theme_bw()
 ```
