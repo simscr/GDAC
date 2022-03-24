@@ -70,7 +70,7 @@ bikes_raw <- bike_files %>%
   lapply(import, setclass = "tibble") %>% 
   dplyr::bind_rows()
 
-rio::export(bikes, file = hehere("bike_data", "all_bikes.rds"))
+rio::export(bikes, file = here("bike_data", "all_bikes.rds"))
 
 ```
 
